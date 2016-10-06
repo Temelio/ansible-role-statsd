@@ -1,0 +1,28 @@
+---
+
+# Main tasks file for statsd role
+
+- name: 'Include install tasks'
+  include: './install.yml'
+  tags:
+    - 'statsd::role'
+    - 'statsd::install'
+
+
+- name: 'Include config tasks'
+  include: './config.yml'
+  tags:
+    - 'statsd::role'
+    - 'statsd::config'
+
+
+- name: 'Manage statsd service'
+  become: True
+  service:
+    name: "{{ statsd_service_name }}"
+    enabled: "{{ statsd_service_enabled }}"
+    state: "{{ statsd_service_state }}"
+  tags:
+    - 'statsd::role'
+    - 'statsd::install'
+    - 'statsd::config'
