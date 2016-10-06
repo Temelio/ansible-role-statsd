@@ -1,0 +1,14 @@
+---
+
+# Handlers main file for statsd role
+
+- name: 'Restart statsd'
+  become: True
+  service:
+    name: "{{ statsd_service_name }}"
+    state: 'restarted'
+  when: "{{ statsd_service_enabled == 'started' }}"
+  tags:
+    - 'statsd::role'
+    - 'statsd::install'
+    - 'statsd::config'
