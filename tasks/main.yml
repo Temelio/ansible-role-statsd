@@ -2,6 +2,13 @@
 
 # Main tasks file for statsd role
 
+- name: 'INIT | Manage variables to use for our target'
+  include: "{{ role_path }}/tasks/manage_variables.yml"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::init'
+
+
 - name: 'Include install tasks'
   include: './install.yml'
   tags:
