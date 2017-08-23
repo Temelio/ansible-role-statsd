@@ -17,6 +17,11 @@
 
 
 - hosts: 'all'
+  pre_tasks:
+    - name: 'PREREQUISITES | APT | Install net-tools'
+      become: True
+      raw: 'apt-get install -qq net-tools'
+      changed_when: False
   roles:
     - role: "{{ role_name }}"
   vars:
