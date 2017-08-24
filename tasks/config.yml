@@ -1,12 +1,11 @@
 ---
 
-- name: 'Create statsd configuration file'
-  become: True
+- name: 'CONFIG | Create statsd configuration file'
   template:
-    src: 'config.js.j2'
-    dest: "{{ statsd_config_file }}"
-    owner: "{{ statsd_user_name }}"
-    group: "{{ statsd_group_name }}"
-    mode: "{{ statsd_config_mode }}"
+    src: "{{ role_path }}/templates/config.js.j2"
+    dest: "{{ statsd_paths.files.main_config.path }}"
+    owner: "{{ statsd_paths.files.main_config.owner | default(statsd_user.name) }}"
+    group: "{{ statsd_paths.files.main_config.group | default(statsd_group.name) }}"
+    mode: "{{ statsd_paths.files.main_config.mode | default('0400') }}"
   notify:
-    - 'Restart statsd'
+    - 'HANDLER | Restart statsd'
