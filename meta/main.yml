@@ -2,12 +2,15 @@
 
 galaxy_info:
   author: 'Alexandre Chaussier'
-  description: 'Ansible role to manage statsd installation and configuration'
+  description: 'Ansible role to install and configure Statsd'
   company: 'Temelio (http://www.temelio.com)'
   license: 'MIT'
   min_ansible_version: '2.0'
   github_branch: 'master'
   platforms:
+    - name: 'Debian'
+      versions:
+        - 'jessie'
     - name: 'Ubuntu'
       versions:
         - 'trusty'

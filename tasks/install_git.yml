@@ -1,0 +1,46 @@
+---
+
+# Git installation tasks
+
+- name: 'INSTALL | USER | Create statsd user'
+  user:
+    name: "{{ statsd_user.name }}"
+    shell: "{{ statsd_user.shell }}"
+    home: "{{ statsd_user.home }}"
+    createhome: "{{ statsd_user.create_home }}"
+    state: "{{ statsd_user.state | default('present') }}"
+
+
+- name: 'INSTALL | GIT | Download statsd from git repository'
+  git:
+    repo: "{{ statsd_git.repository_url }}"
+    dest: "{{ statsd_git.dest_folder }}"
+    bare: "{{ statsd_git.bare }}"
+    clone: "{{ statsd_git.clone }}"
+    force: "{{ statsd_git.force }}"
+    update: "{{ statsd_git.do_update }}"
+    version: "{{ statsd_version }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+
+
+- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
+  npm:
+    global: "{{ statsd_npm.global }}"
+    path: "{{ statsd_npm.path }}"
+    production: "{{ statsd_npm.production }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+
+
+- name: 'INSTALL | PATHS | Ensure statsd folders exists'
+  file:
+    path: "{{ item.path }}"
+    state: 'directory'
+    owner: "{{ item.owner | default(statsd_user.name) }}"
+    group: "{{ item.group | default(statsd_group.name) }}"
+    mode: "{{ item.mode | default('0700') }}"
+  with_items:
+    - "{{ statsd_paths.dirs.config }}"
+    - "{{ statsd_paths.dirs.log }}"
+    - "{{ statsd_paths.dirs.root }}"
