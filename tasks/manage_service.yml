@@ -1,0 +1,20 @@
+---
+
+# Tasks about service management
+
+- name: 'INSTALL | SERVICE | Install statsd init.d script'
+  template:
+    src: "{{ role_path }}/templates/init.j2"
+    dest: "{{ statsd_paths.files.init_d.path }}"
+    owner: "{{ statsd_user.name }}"
+    group: "{{ statsd_group.name }}"
+    mode: "{{ statsd_paths.files.init_d.mode | default('0500') }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+
+
+- name: 'INSTALL | SERVICE | Manage statsd service'
+  service:
+    name: "{{ statsd_service.name }}"
+    enabled: "{{ statsd_service.enabled }}"
+    state: "{{ statsd_service.state }}"

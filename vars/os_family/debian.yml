@@ -1,0 +1,8 @@
+---
+
+# Debian OS family specific vars
+
+_statsd_prerequisites_packages:
+  - name: 'git'
+  - name: 'nodejs'
+  - name: 'npm'

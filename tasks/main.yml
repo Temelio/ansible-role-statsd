@@ -2,27 +2,43 @@
 
 # Main tasks file for statsd role
 
-- name: 'Include install tasks'
-  include: './install.yml'
+- name: 'INIT | Manage variables to use for our target'
+  include: "{{ role_path }}/tasks/manage_variables.yml"
   tags:
-    - 'statsd::role'
-    - 'statsd::install'
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::init'
+    - 'role::statsd::install'
 
 
-- name: 'Include config tasks'
-  include: './config.yml'
-  tags:
-    - 'statsd::role'
-    - 'statsd::config'
-
-
-- name: 'Manage statsd service'
+- name: 'INSTALL | Manage os family installation tasks'
   become: True
-  service:
-    name: "{{ statsd_service_name }}"
-    enabled: "{{ statsd_service_enabled }}"
-    state: "{{ statsd_service_state }}"
+  include: "{{ role_path }}/tasks/install_debian.yml"
   tags:
-    - 'statsd::role'
-    - 'statsd::install'
-    - 'statsd::config'
+    - 'role::statsd'
+    - 'role::statsd::install'
+
+
+- name: 'INSTALL | Manage Git installation tasks'
+  become: True
+  include: "{{ role_path }}/tasks/install_git.yml"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::install'
+
+
+- name: 'CONFIG | Manage config tasks'
+  become: True
+  include: "{{ role_path }}/tasks/config.yml"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+
+
+- name: 'CONFIG | Manage services tasks'
+  become: True
+  include: "{{ role_path }}/tasks/manage_service.yml"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'

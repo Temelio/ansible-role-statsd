@@ -22,17 +22,17 @@ failure() {
     echo $@
 }
 
-prog=statsd
-STATSDDIR={{ statsd_user_home }}
-statsd=./stats.js
-LOG={{ statsd_log_file }}
-ERRLOG={{ statsd_log_error_file }}
-CONFFILE={{ statsd_config_file }}
-pidfile="{{ statsd_pid_file }}"
-lockfile={{ statsd_lock_file }}
+prog="statsd"
+STATSDDIR="{{ statsd_paths.dirs.root.path }}"
+statsd="./stats.js"
+LOG="{{ statsd_paths.files.log.path }}"
+ERRLOG="{{ statsd_paths.files.log_error.path }}"
+CONFFILE="{{ statsd_paths.files.main_config.path }}"
+pidfile="{{ statsd_paths.files.pid.path }}"
+lockfile="{{ statsd_paths.files.lock.path }}"
 RETVAL=0
 STOP_TIMEOUT=${STOP_TIMEOUT-10}
-USER={{ statsd_user_name }}
+USER="{{ statsd_user.name }}"
 
 start() {
     echo -n $"Starting $prog: "
