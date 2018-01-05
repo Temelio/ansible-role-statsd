@@ -3,14 +3,14 @@
 # Defaults vars file for statsd role
 
 # Repository & package management
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 statsd_prerequisites_packages: "{{ _statsd_prerequisites_packages }}"
 statsd_repository_cache_valid_time: 3600
 statsd_repository_update_cache: True
 
 
 # Statsd user anfd group
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 statsd_user:
   name: 'statsd'
   shell: '/usr/sbin/nologin'
@@ -27,7 +27,7 @@ statsd_nodejs_binary: '/usr/bin/nodejs'
 
 
 # Service management
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 statsd_service:
   name: 'statsd'
   state: 'started'
@@ -35,7 +35,7 @@ statsd_service:
 
 
 # Path management
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 statsd_paths:
   dirs:
     config:
@@ -61,7 +61,7 @@ statsd_config_mode: '0400'
 
 
 # Statsd options
-#------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Statsd git options
 statsd_git:
