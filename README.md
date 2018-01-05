@@ -1,6 +1,10 @@
 # statsd
 
-[![Build Status](https://travis-ci.org/Temelio/ansible-role-statsd.svg?branch=master)](https://travis-ci.org/Temelio/ansible-role-statsd)
+[![Build Status](https://img.shields.io/travis/Temelio/ansible-role-statsd/master.svg?label=travis_master)](https://travis-ci.org/Temelio/ansible-role-statsd)
+[![Build Status](https://img.shields.io/travis/Temelio/ansible-role-statsd/develop.svg?label=travis_develop)](https://travis-ci.org/Temelio/ansible-role-statsd)
+[![Updates](https://pyup.io/repos/github/Temelio/ansible-role-statsd/shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
+[![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
+[![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
 
 Install statsd package.
 
