@@ -11,9 +11,7 @@ galaxy_info:
     - name: 'Debian'
       versions:
         - 'jessie'
-    - name: 'Ubuntu'
-      versions:
-        - 'trusty'
+        - 'stretch'
         - 'xenial'
   galaxy_tags:
     - 'monitoring'

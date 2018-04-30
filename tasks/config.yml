@@ -8,4 +8,4 @@
     group: "{{ statsd_paths.files.main_config.group | default(statsd_group.name) }}"
     mode: "{{ statsd_paths.files.main_config.mode | default('0400') }}"
   notify:
-    - 'HANDLER | Restart statsd'
+    - 'HANDLER | Start statsd'

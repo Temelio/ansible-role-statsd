@@ -6,7 +6,7 @@
 [![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
 [![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
 
-Install statsd package.
+Install statsd package with SystemD.
 
 ## Requirements
 
@@ -21,9 +21,9 @@ Local and Travis tests run tests on Docker by default.
 See molecule documentation to use other backend.
 
 Currently, tests are done on:
-- Debian Jessie
-- Ubuntu Trusty
 - Ubuntu Xenial
+- Debian Jessie
+- Debian Stretch
 
 and use:
 - Ansible 2.2.x
@@ -57,7 +57,7 @@ statsd_nodejs_binary: '/usr/bin/nodejs'
 statsd_prerequisites_packages:
   - 'git'
   - 'nodejs'
-  - 'npm'
+  - 'npm' # only for Ubuntu / Jessie
 statsd_prerequisites_state: 'present'
 statsd_prerequisites_cache_valid_time: 3600
 
@@ -68,14 +68,8 @@ statsd_service_enabled: True
 
 # Path management
 statsd_folders_mode: '0700'
-statsd_init_file: '/etc/init.d/statsd'
-statsd_init_mode: '0500'
 statsd_config_file: '/etc/statsd/config.js'
 statsd_config_mode: '0400'
-statsd_lock_file: '/var/lock/subsys/statsd'
-statsd_log_file: '/var/log/statsd/statsd.log'
-statsd_log_error_file: '/var/log/statsd/statsd-err.log'
-statsd_pid_file: '/var/run/statsd.pid'
 
 # Statsd git options
 statsd_git_repository_url: 'https://github.com/etsy/statsd.git'

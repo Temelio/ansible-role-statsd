@@ -2,13 +2,10 @@
 Role tests
 """
 
-import os
 import pytest
-
 from testinfra.utils.ansible_runner import AnsibleRunner
 
-testinfra_hosts = AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
+testinfra_hosts = AnsibleRunner('.molecule/ansible_inventory').get_hosts('all')
 
 
 def test_user(host):
@@ -25,9 +22,8 @@ def test_user(host):
 @pytest.mark.parametrize('item_type,path,user,group,mode', [
     ('directory', '/etc/statsd', 'statsd', 'statsd', 0o700),
     ('directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
-    ('directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
     ('file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o400),
-    ('file', '/etc/init.d/statsd', 'statsd', 'statsd', 0o500),
+    ('file', '/etc/systemd/system/statsd.service', 'root', 'root', 0o500),
 ])
 def test_paths_properties(host, item_type, path, user, group, mode):
     """
@@ -56,11 +52,11 @@ def test_service(host):
 
     assert service.is_enabled
 
-    # if host.system_info.codename in ['xenial', 'jessie']:
-    #    assert 'is running' in host.check_output('service statsd status')
-    # else:
-    #    assert service.is_running
-    assert service.is_running
+    if host.system_info.codename in ['xenial']:
+        assert 'is running' in \
+          host.check_output('servicectl status statsd.service')
+    else:
+        assert service.is_running
 
 
 def test_process(host):

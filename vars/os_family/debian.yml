@@ -6,3 +6,7 @@ _statsd_prerequisites_packages:
   - name: 'git'
   - name: 'nodejs'
   - name: 'npm'
+
+_statsd_prerequisites_packages_stretch:
+  - name: 'git'
+  - name: 'nodejs'
