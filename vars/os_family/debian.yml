@@ -7,4 +7,3 @@ _statsd_prerequisites_packages:
   - name: 'nodejs'
   - name: 'npm'
   - name: 'ssmtp'
-
