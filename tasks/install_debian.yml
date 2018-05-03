@@ -10,6 +10,10 @@
     cache_valid_time: "{{ statsd_repository_cache_valid_time }}"
   with_items: "{{ statsd_prerequisites_packages }}"
   when: (ansible_distribution_release == "jessie" or ansible_distribution == "Ubuntu")
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
 
 - name: 'INSTALL | APT | https method'
   apt:
@@ -18,18 +22,30 @@
     update_cache: "{{ statsd_repository_update_cache }}"
     cache_valid_time: "{{ statsd_repository_cache_valid_time }}"
   when: (ansible_distribution_release == "stretch")
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
 
 - name: 'ADD | APT | Key nodeJS respository'
   apt_key:
     url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
     state: 'present'
   when: (ansible_distribution_release == "stretch")
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
 
 - name: 'ADD | APT | nodeJS repository'
   apt_repository:
     repo: 'deb https://deb.nodesource.com/node_4.x stretch main'
     state: 'present'
   when: (ansible_distribution_release == "stretch")
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
 
 - name: 'INSTALL | APT | Install system prerequisites 4 Stretch'
   apt:
@@ -39,3 +55,7 @@
     cache_valid_time: "{{ statsd_repository_cache_valid_time }}"
   with_items: "{{ statsd_prerequisites_packages_stretch }}"
   when: (ansible_distribution_release == "stretch")
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'

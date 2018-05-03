@@ -9,3 +9,33 @@
     mode: "{{ statsd_paths.files.main_config.mode | default('0400') }}"
   notify:
     - 'HANDLER | Start statsd'
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+
+- name: 'CONFIG | Create ssmtp configuration file'
+  template:
+    src: "{{ role_path }}/templates/ssmtp.conf.j2"
+    dest: "{{ ssmtp_paths.files.main_config.path }}"
+    owner: "{{ ssmtp_paths.files.main_config.owner | default(statsd_user.name) }}"
+    group: "{{ ssmtp_paths.files.main_config.group | default(statsd_group.name) }}"
+    mode: "{{ ssmtp_paths.files.main_config.mode | default('0400') }}"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+    - 'role::statsd::install::ssmtp'
+
+- name: 'CONFIG | Create revealiases configuration file'
+  template:
+    src: "{{ role_path }}/templates/revaliases.j2"
+    dest: "{{ revaliases_paths.files.main_config.path }}"
+    owner: "{{ ssmtp_paths.files.main_config.owner | default(statsd_user.name) }}"
+    group: "{{ ssmtp_paths.files.main_config.group | default(statsd_group.name) }}"
+    mode: "{{ ssmtp_paths.files.main_config.mode | default('0400') }}"
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+    - 'role::statsd::install::ssmtp'

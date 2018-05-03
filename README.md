@@ -6,7 +6,7 @@
 [![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
 [![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
 
-Install statsd package with SystemD.
+Install statsd package with SystemD, and ssmtp for email alert on failure.
 
 ## Requirements
 
@@ -37,67 +37,166 @@ and use:
 ```
 $ tox
 ```
-
 ## Role Variables
 
 ### Default role variables
 
 ``` yaml
-# Statsd user
-statsd_user_name: 'statsd'
-statsd_group_name: 'statsd'
-statsd_user_shell: '/usr/sbin/nologin'
-statsd_user_home: '/var/lib/statsd'
-statsd_user_create_home: False
+# Repository & package management
+# -----------------------------------------------------------------------------
+statsd_prerequisites_packages: "{{ _statsd_prerequisites_packages }}"
+statsd_prerequisites_packages_stretch: "{{ _statsd_prerequisites_packages_stretch }}"
+statsd_repository_cache_valid_time: 3600
+statsd_repository_update_cache: 'True'
+
+
+# Statsd user and group
+# -----------------------------------------------------------------------------
+statsd_user:
+  name: 'statsd'
+  shell: '/usr/sbin/nologin'
+  home: '/var/lib/statsd'
+  create_home: 'False'
+
+statsd_group:
+  name: "{{ statsd_user.name }}"
 
 # Installation management
 statsd_install_method: 'git'
 statsd_version: 'v0.8.0'
 statsd_nodejs_binary: '/usr/bin/nodejs'
-statsd_prerequisites_packages:
-  - 'git'
-  - 'nodejs'
-  - 'npm' # only for Ubuntu / Jessie
-statsd_prerequisites_state: 'present'
-statsd_prerequisites_cache_valid_time: 3600
+
+nodejs_prerequisites_packages_stretch: "{{ _nodejs_prerequisites_packages_stretch }}"
+
 
 # Service management
+# -----------------------------------------------------------------------------
+statsd_service_description: 'StatsD Service'
 statsd_service_name: 'statsd'
+statsd_service_enabled: 'True'
 statsd_service_state: 'started'
-statsd_service_enabled: True
+statsd_log_storage: 'persistent'
+statsd_log_compress: 'yes'
+
+systemd_service_name: 'systemd'
+
+# Statsd systemd services specific settings
+is_systemd_managed_system: "{{ _is_systemd_managed_system | default(False) }}"
+statsd_service_systemd:
+  dest: '/etc/systemd/system/statsd.service'
+  handler: 'Restart statsd'
+  options:
+    Install:
+      WantedBy: 'multi-user.target'
+    Restart: 'on_failure'
+    Service:
+      Group: "{{ statsd_group.name }}"
+      PrivateTmp: 'true'
+      Restart: 'on-failure'
+      RestartSec: '10s'
+      Type: 'simple'
+      User: "{{ statsd_user.name }}"
+    Unit:
+      After: ''
+      Description: 'Network daemon for aggregating statistics'
+      Wants: 'network.target'
 
 # Path management
-statsd_folders_mode: '0700'
-statsd_config_file: '/etc/statsd/config.js'
-statsd_config_mode: '0400'
+# -----------------------------------------------------------------------------
+statsd_paths:
+  dirs:
+    config:
+      path: '/etc/statsd'
+    root:
+      path: "{{ statsd_user.home }}"
+    pid:
+      path: '/var/run/statsd'
+    service:
+      path: '/etc/systemd/system'
+  files:
+    main_config:
+      path: '/etc/statsd/config.js'
+      owner: "{{ statsd_user.name }}"
+      group: "{{ statsd_group.name }}"
+      mode: '0750'
+    pid:
+      path: '/var/run/statsd/statsd.pid'
+    service:
+      path: '/var/lib/statsd/stats.js'
+statsd_config_mode: '0750'
+
+
+# Statsd options
+# -----------------------------------------------------------------------------
 
 # Statsd git options
-statsd_git_repository_url: 'https://github.com/etsy/statsd.git'
-statsd_git_dest_folder: "{{ statsd_user_home }}"
-statsd_git_option_bare: False
-statsd_git_option_clone: True
-statsd_git_option_force: True
-statsd_git_option_update: False
+statsd_git:
+  repository_url: 'https://github.com/etsy/statsd.git'
+  dest_folder: "{{ statsd_user.home }}"
+  bare: 'False'
+  clone: 'True'
+  force: 'True'
+  do_update: 'False'
 
 # NPM options
-statsd_npm_option_global: False
-statsd_npm_option_path: "{{ statsd_user_home }}"
-statsd_npm_option_production: True
+statsd_npm:
+  global: 'False'
+  path: "{{ statsd_user.home }}"
+  production: 'True'
+  state: 'present'
 
 # Statsd configuration
 statsd_config:
   port: 8125
   backends:
     - './backends/console'
-  debug: False
+  debug: 'False'
   address: '127.0.0.1'
   mgmt_address: '127.0.0.1'
   mgmt_port: 8126
   title: 'statsd'
   healthStatus: 'up'
-  dumpMessages: False
-  deleteIdleStats: False
+  dumpMessages: 'False'
+  deleteIdleStats: 'False'
   prefixStats: 'statsd'
+
+# Ssmtp config and path
+# -----------------------------------------------------------------------------
+
+ssmtp_root_recipient: 'toto@example.com'
+ssmtp_mailhub: 'mail.example.com:587'
+ssmtp_from_line_oeverride: 'YES'
+ssmtp_use_STARTTLS: 'YES'
+ssmtp_authUser: 'toto@example.com'
+ssmtp_authPass: 'change me'
+ssmtp_fromEmail: 'admin@example.com'
+ssmtp_toEmail: 'titi@example.com'
+
+ssmtp_paths:
+  files:
+    main_config:
+      path: '/etc/ssmtp/ssmtp.conf'
+      owner: 'root'
+      group: 'mail'
+      mode: '0640'
+
+revaliases_paths:
+  files:
+    main_config:
+      path: '/etc/ssmtp/revaliases'
+
+
+# Notify user and group
+# -----------------------------------------------------------------------------
+notify_systemd_unit_description: 'status email for %i to user'
+notify_systemd_unit_after: 'network.target'
+notify_systemd_type: 'oneshot'
+notify_systemd_execstart: '/usr/local/bin/systemd-email {{ ssmtp_toEmail }} %i'
+notify_systemd_restartsec: '600'
+notify_user: 'nobody'
+notify_group: 'systemd-journal'
+notify_service_state: 'started'
+notify_service_enabled: 'True'
 ```
 
 ## Dependencies

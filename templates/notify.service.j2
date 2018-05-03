@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description={{ notify_systemd_unit_description }}
+After={{ notify_systemd_unit_after }}
+
+[Service]
+Type={{ notify_systemd_type }}
+ExecStart={{ notify_systemd_execstart }}
+User={{ notify_user }}
+Group={{ notify_group }}

@@ -6,7 +6,5 @@ _statsd_prerequisites_packages:
   - name: 'git'
   - name: 'nodejs'
   - name: 'npm'
+  - name: 'ssmtp'
 
-_statsd_prerequisites_packages_stretch:
-  - name: 'git'
-  - name: 'nodejs'

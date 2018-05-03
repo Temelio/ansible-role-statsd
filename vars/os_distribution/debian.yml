@@ -2,4 +2,9 @@
 
 # Distribution OS family specific vars
 
+_statsd_prerequisites_packages_stretch:
+  - name: 'git'
+  - name: 'nodejs'
+  - name: 'ssmtp'
+
 _nodejs_prerequisites_packages_stretch: 'apt-transport-https'

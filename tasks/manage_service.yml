@@ -12,6 +12,10 @@
   register: 'check_statsd_service_upstart_managed'
   notify:
     - 'HANDLER | Restart statsd'
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
 
 - name: 'SERVICE | SYSTEMD | Manage log file'
   template:
@@ -22,3 +26,33 @@
     mode: '0644'
   notify:
     - 'HANDLER | Restart statsd'
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+
+- name: 'SERVICE | SYSTEMD | copy script to send mails'
+  template:
+    src: "{{ role_path }}/templates/systemd.email.j2"
+    dest: '/usr/local/bin/systemd-email'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+    - 'role::statsd::install::ssmtp'
+
+- name: 'SERVICE | SYSTEMD | Manage notification on failed units'
+  template:
+    src: "{{ role_path }}/templates/notify.service.j2"
+    dest: '/etc/systemd/system/notify@.service'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+  tags:
+    - 'role::statsd'
+    - 'role::statsd::config'
+    - 'role::statsd::install'
+    - 'role::statsd::install:ssmtp'

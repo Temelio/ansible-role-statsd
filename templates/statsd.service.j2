@@ -3,6 +3,7 @@
 [Unit]
 Description={{ statsd_service_systemd.options.Unit.Description }}
 Wants={{ statsd_service_systemd.options.Unit.Wants }}
+OnFailure=notify@%n.service
 
 [Service]
 Type={{ statsd_service_systemd.options.Service.Type }}
@@ -11,7 +12,6 @@ PIDFile={{ statsd_paths.files.pid.path }}
 ExecStart={{ statsd_nodejs_binary }} {{statsd_paths.files.service.path}} {{ statsd_paths.files.main_config.path }}
 Restart={{ statsd_service_systemd.options.Service.Restart }}
 RestartSec={{ statsd_service_systemd.options.Service.RestartSec }}
-OnFailure=notify@%n.service
 
 [Install]
 WantedBy={{ statsd_service_systemd.options.Install.WantedBy }}

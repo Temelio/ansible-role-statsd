@@ -24,6 +24,8 @@ def test_user(host):
     ('directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
     ('file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o400),
     ('file', '/etc/systemd/system/statsd.service', 'root', 'root', 0o500),
+    ('file', '/etc/ssmtp/ssmtp.conf', 'root', 'root', 0o500),
+    ('file', '/etc/ssmtp/revaliases', 'root', 'root', 0o500),
 ])
 def test_paths_properties(host, item_type, path, user, group, mode):
     """

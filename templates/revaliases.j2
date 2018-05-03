@@ -1,0 +1,10 @@
+# sSMTP aliases
+# 
+# Format:	local_account:outgoing_address:mailhub
+#
+# Example: root:your_login@your.domain:mailhub.your.domain[:port]
+# where [:port] is an optional port number that defaults to 25.
+#root:your_id@example.com:server.example.com:587
+root:{{ ssmtp_root_recipient }}:{{ ssmtp_mailhub }}
+# Other System user: (for Apache)
+# www-data:votre_identifiant@fournisseur.com:mail.fournisseur.com:587

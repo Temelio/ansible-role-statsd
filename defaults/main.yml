@@ -36,6 +36,7 @@ statsd_service_name: 'statsd'
 statsd_service_enabled: 'True'
 statsd_service_state: 'started'
 statsd_log_storage: 'persistent'
+statsd_log_compress: 'yes'
 
 systemd_service_name: 'systemd'
 
@@ -118,3 +119,41 @@ statsd_config:
   dumpMessages: 'False'
   deleteIdleStats: 'False'
   prefixStats: 'statsd'
+
+# Ssmtp config and path
+# -----------------------------------------------------------------------------
+
+ssmtp_root_recipient: 'toto@example.com'
+ssmtp_mailhub: 'mail.example.com:587'
+ssmtp_from_line_oeverride: 'YES'
+ssmtp_use_STARTTLS: 'YES'
+ssmtp_authUser: 'toto@example.com'
+ssmtp_authPass: 'change me'
+ssmtp_fromEmail: 'admin@example.com'
+ssmtp_toEmail: 'titi@example.com'
+
+ssmtp_paths:
+  files:
+    main_config:
+      path: '/etc/ssmtp/ssmtp.conf'
+      owner: 'root'
+      group: 'mail'
+      mode: '0640'
+
+revaliases_paths:
+  files:
+    main_config:
+      path: '/etc/ssmtp/revaliases'
+
+
+# Notify user and group
+# -----------------------------------------------------------------------------
+notify_systemd_unit_description: 'status email for %i to user'
+notify_systemd_unit_after: 'network.target'
+notify_systemd_type: 'oneshot'
+notify_systemd_execstart: '/usr/local/bin/systemd-email {{ ssmtp_toEmail }} %i'
+notify_systemd_restartsec: '600'
+notify_user: 'nobody'
+notify_group: 'systemd-journal'
+notify_service_state: 'started'
+notify_service_enabled: 'True'
