@@ -4,6 +4,8 @@
 
 _statsd_prerequisites_packages:
   - name: 'git'
-  - name: 'nodejs'
-  - name: 'npm'
-  - name: 'ssmtp'
+
+statsd_init_dest: '/etc/systemd/system/statsd.service'
+statsd_init_owner: 'root'
+statsd_init_group: 'root'
+statsd_init_mode: '0644'

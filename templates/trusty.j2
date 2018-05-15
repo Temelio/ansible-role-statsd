@@ -1,0 +1,110 @@
+#!/bin/bash
+#
+# StatsD
+#
+# chkconfig: 3 50 50
+
+### BEGIN INIT INFO
+# Provides:          statsd
+# Required-Start:    $remote_fs $network $local_fs $syslog
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: StatsD init.d
+# Description:       StatsD init.d
+### END INIT INFO
+
+success() {
+    echo $@
+}
+
+failure() {
+    echo $@
+}
+
+prog="statsd"
+STATSDDIR="{{ statsd_paths.dirs.root.path }}"
+statsd="./stats.js"
+LOG="{{ statsd_paths.files.log.path }}"
+ERRLOG="{{ statsd_paths.files.log_error.path }}"
+CONFFILE="{{ statsd_paths.files.main_config.path }}"
+pidfile="{{ statsd_paths.files.pid.path }}"
+lockfile="{{ statsd_paths.files.lock.path }}"
+RETVAL=0
+STOP_TIMEOUT=${STOP_TIMEOUT-10}
+USER="{{ statsd_user.name }}"
+
+start() {
+    echo -n $"Starting $prog: "
+    cd ${STATSDDIR}
+
+    # See if it's already running. Look *only* at the pid file.
+    if [ -f ${pidfile} ] && kill -SIGCONT $(cat ${pidfile}) 2> /dev/null; then
+        failure "PID file exists and process is running for statsd"
+        RETVAL=1
+    else
+        # Run as process
+        su ${USER} -s /bin/bash -c "PATH=${PATH} {{ statsd_nodejs_binary }} ${statsd} ${CONFFILE}" >> ${LOG} 1>> ${ERRLOG} &
+        RETVAL=$?
+
+        # Store PID
+        echo $! > ${pidfile}
+
+        # Success
+        [ $RETVAL = 0 ] && success "statsd started"
+    fi
+
+    echo
+    return $RETVAL
+}
+
+stop() {
+    [ ! -f ${pidfile} ] && echo "${prog} is not running" && return
+
+    echo -n $"Stopping $prog: "
+    kill -TERM $(cat ${pidfile})
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${pidfile}
+}
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    if
+      [ ! -f ${pidfile} ]
+    then
+      echo "${prog} is not running"
+      RETVAL=1
+    elif
+      kill -0 $(cat ${pidfile})
+    then
+        echo "${prog} is running (pid: $(cat ${pidfile}))"
+      RETVAL=0
+    else
+        echo "${prog} is dead (pid: $(cat ${pidfile}))"
+      RETVAL=2
+    fi
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  condrestart)
+    if [ -f ${pidfile} ] ; then
+        stop
+        start
+    fi
+    ;;
+  *)
+    echo $"Usage: $prog {start|stop|restart|condrestart|status}"
+    exit 1
+esac
+
+exit $RETVAL

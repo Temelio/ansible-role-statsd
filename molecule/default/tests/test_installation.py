@@ -2,15 +2,17 @@
 Role tests
 """
 
+import os
 import pytest
 from testinfra.utils.ansible_runner import AnsibleRunner
 
-testinfra_hosts = AnsibleRunner('.molecule/ansible_inventory').get_hosts('all')
+testinfra_hosts = AnsibleRunner(
+    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
 
 
 def test_user(host):
     """
-    Test statsd user
+    Ensure statsd user exists
     """
 
     user = host.user('statsd')
@@ -19,46 +21,74 @@ def test_user(host):
     assert user.shell == '/usr/sbin/nologin'
 
 
-@pytest.mark.parametrize('item_type,path,user,group,mode', [
-    ('directory', '/etc/statsd', 'statsd', 'statsd', 0o700),
-    ('directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
-    ('file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o400),
-    ('file', '/etc/systemd/system/statsd.service', 'root', 'root', 0o500),
-    ('file', '/etc/ssmtp/ssmtp.conf', 'root', 'root', 0o500),
-    ('file', '/etc/ssmtp/revaliases', 'root', 'root', 0o500),
+@pytest.mark.parametrize('codename,item_type,path,user,group,mode', [
+    (None, 'directory', '/etc/statsd', 'statsd', 'statsd', 0o700),
+    ('trusty', 'directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
+    ('trusty', 'file', '/var/log/statsd/statsd.log', 'root', 'root', 0o644),
+    ('trusty', 'directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
+    ('trusty', 'file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o750),
+    ('trusty', 'file', '/etc/init.d/statsd.service', 'root', 'root', 0o755),
+    (None, 'file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o750),
+    (None, 'file', '/etc/systemd/system/statsd.service', 'root', 'root',
+     0o644),
 ])
-def test_paths_properties(host, item_type, path, user, group, mode):
+def test_paths_properties(host, codename, item_type, path, user, group, mode):
     """
     Test statsd folders and files properties
     """
 
     current_item = host.file(path)
+    return codename
+    return host.system_info.codename
 
-    if item_type == 'directory':
-        assert current_item.is_directory
-    elif item_type == 'file':
-        assert current_item.is_file
+    if codename == host.system_info.codename:
+        """
+        Test statsd folders and files properties trusty
+        """
 
-    assert current_item.exists
-    assert current_item.user == user
-    assert current_item.group == group
-    assert current_item.mode == mode
+        if item_type == 'directory':
+            assert current_item.is_directory
+        elif item_type == 'file':
+            assert current_item.is_file
+
+        assert current_item.exists
+        assert current_item.user == user
+        assert current_item.group == group
+        assert current_item.mode == mode
+
+    else:
+        if item_type == 'directory':
+            assert current_item.is_directory
+        elif item_type == 'file':
+            assert current_item.is_file
+
+        assert current_item.exists
+        assert current_item.user == user
+        assert current_item.group == group
+        assert current_item.mode == mode
 
 
 def test_service(host):
-    """
-    Test statsd service
-    """
+    if host.system_info.codename == 'trusty':
+        """
+        Test statsd service for trusty
+        """
+        service = host.service('statsd.service')
 
-    service = host.service('statsd')
+        assert service.is_enabled
 
-    assert service.is_enabled
-
-    if host.system_info.codename in ['xenial']:
-        assert 'is running' in \
-          host.check_output('servicectl status statsd.service')
-    else:
         assert service.is_running
+    else:
+        """
+        Test statsd service for jessie, stretch, xenial
+        """
+
+        service = host.service('statsd')
+
+        assert service.is_enabled
+
+        assert 'running' in \
+            host.check_output('service statsd status')
 
 
 def test_process(host):

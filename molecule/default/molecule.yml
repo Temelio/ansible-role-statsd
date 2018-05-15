@@ -15,19 +15,24 @@ driver:
 lint:
   name: 'yamllint'
 platforms:
-  - name: 'docker-xenial'
+  - name: "statsd-docker-trusty"
+    image: 'ubuntu:trusty'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+  - name: 'statsd-docker-xenial'
     image: 'solita/ubuntu-systemd:16.04'
     command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
-  - name: 'docker-jessie'
+  - name: 'statsd-docker-jessie'
     image: 'minimum2scp/systemd-jessie:latest'
     command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
-  - name: 'docker-stretch'
+  - name: 'statsd-docker-stretch'
     image: 'minimum2scp/systemd-stretch'
     command: '/sbin/init'
     cap_add:

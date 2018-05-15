@@ -2,57 +2,27 @@
 
 # Tasks about statsd service management
 
-- name: 'SERVICE | UPSTART | Manage systemd statsD service configuration file'
+- name: 'SERVICE | STATSD | Manage init.d/systemd statsD service configuration file'
   template:
-    src: "{{ role_path }}/templates/statsd.service.j2"
-    dest: '/etc/systemd/system/statsd.service'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  register: 'check_statsd_service_upstart_managed'
+    src: "{{ role_path }}/templates/{{ ansible_distribution_release }}.j2"
+    dest: "{{ statsd_init_dest }}"
+    owner: "{{ statsd_init_owner }}"
+    group: "{{ statsd_init_group }}"
+    mode: "{{ statsd_init_mode }}"
   notify:
     - 'HANDLER | Restart statsd'
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::config'
-    - 'role::statsd::install'
 
-- name: 'SERVICE | SYSTEMD | Manage log file'
+
+# systemD
+- name: 'SERVICE | SYSTEMD | Manage notification and log file'
   template:
-    src: "{{ role_path }}/templates/journald.conf.j2"
-    dest: '/etc/systemd/journald.conf'
+    src: "{{ role_path }}/templates/{{ item.name }}"
+    dest: "{{ item.dest }}"
     owner: 'root'
     group: 'root'
-    mode: '0644'
+    mode: "{{ item.mode }}"
+  with_items:
+    - "{{ service_systemd_conf_files }}"
+  when: ( ansible_distribution_release != "trusty")
   notify:
     - 'HANDLER | Restart statsd'
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::config'
-    - 'role::statsd::install'
-
-- name: 'SERVICE | SYSTEMD | copy script to send mails'
-  template:
-    src: "{{ role_path }}/templates/systemd.email.j2"
-    dest: '/usr/local/bin/systemd-email'
-    owner: 'root'
-    group: 'root'
-    mode: '0755'
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::config'
-    - 'role::statsd::install'
-    - 'role::statsd::install::ssmtp'
-
-- name: 'SERVICE | SYSTEMD | Manage notification on failed units'
-  template:
-    src: "{{ role_path }}/templates/notify.service.j2"
-    dest: '/etc/systemd/system/notify@.service'
-    owner: 'root'
-    group: 'root'
-    mode: '0644'
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::config'
-    - 'role::statsd::install'
-    - 'role::statsd::install:ssmtp'

@@ -2,21 +2,23 @@
 
 # Handlers main file for statsd role
 
-- name: 'HANDLER | Start statsd'
-  systemd:
-    name: 'statsd.service'
-    state: '{{ statsd_service_state }}'
-    enabled: '{{ statsd_service_enabled }}'
+
+- name: 'HANDLER | Restart statsd'
+  service:
+    name: "{{ statsd_service_name }}"
+    state: 'restarted'
+    enabled: "{{ statsd_service_enabled }}"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'
     - 'role::statsd::config'
 
-- name: 'HANDLER | Restart statsd'
-  systemd:
-    name: 'statsd.service'
-    daemon-reload: 'yes'
-    state: 'restarted'
+
+- name: 'HANDLER | Start statsd'
+  service:
+    name: "{{ statsd_service_name }}"
+    state: '{{ statsd_service_state }}'
+    enabled: "{{ statsd_service_enabled }}"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'

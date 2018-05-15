@@ -25,9 +25,11 @@
   register: 'statsd_check_os_release_vars'
   delegate_to: '127.0.0.1'
 
+
 - name: 'INIT | VARIABLES | Load OS family vars file'
   include_vars: "{{ role_path }}/vars/os_family/{{ ansible_os_family | lower }}.yml"
   when: "statsd_check_os_family_vars.stat.exists"
+
 
 - name: 'INIT | VARIABLES | Load OS distribution vars file'
   include_vars: "{{ role_path }}/vars/os_distribution/{{ ansible_distribution | lower }}.yml"

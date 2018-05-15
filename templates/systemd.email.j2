@@ -1,10 +1,12 @@
+// {{ ansible_managed }}
+
 #!/bin/bash
 export file=/tmp/sendmail.txt
 
 
 if [ ! -f $file ]; then 
   echo "TO: $1" >> $file
-  echo "From: {{ ssmtp_fromEmail }}" >> $file
+  echo "From: {{ notify_ssmtp_fromEmail }}" >> $file
   echo "Subject: $HOSTNAME - $2" >> $file
   echo "Content-Transfer-Encoding: 8bit" >> $file
   echo "Content-Type: text/plain; charset=UTF-8" >> $file

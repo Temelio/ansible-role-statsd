@@ -6,7 +6,7 @@
 [![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
 [![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
 
-Install statsd package with SystemD, and ssmtp for email alert on failure.
+Install statsd package.
 
 ## Requirements
 
@@ -21,6 +21,7 @@ Local and Travis tests run tests on Docker by default.
 See molecule documentation to use other backend.
 
 Currently, tests are done on:
+- Ubuntu Trusty
 - Ubuntu Xenial
 - Debian Jessie
 - Debian Stretch
@@ -45,7 +46,6 @@ $ tox
 # Repository & package management
 # -----------------------------------------------------------------------------
 statsd_prerequisites_packages: "{{ _statsd_prerequisites_packages }}"
-statsd_prerequisites_packages_stretch: "{{ _statsd_prerequisites_packages_stretch }}"
 statsd_repository_cache_valid_time: 3600
 statsd_repository_update_cache: 'True'
 
@@ -66,8 +66,6 @@ statsd_install_method: 'git'
 statsd_version: 'v0.8.0'
 statsd_nodejs_binary: '/usr/bin/nodejs'
 
-nodejs_prerequisites_packages_stretch: "{{ _nodejs_prerequisites_packages_stretch }}"
-
 
 # Service management
 # -----------------------------------------------------------------------------
@@ -79,6 +77,12 @@ statsd_log_storage: 'persistent'
 statsd_log_compress: 'yes'
 
 systemd_service_name: 'systemd'
+
+service_systemd_conf_files:
+  - { name: 'journald.conf.j2', dest: '/etc/systemd/system/notify@.service', mode: '0644' }
+  - { name: 'notify.service.j2', dest: '/etc/systemd/journald.conf', mode: '0644' }
+  - { name: 'systemd.email.j2', dest: '/usr/local/bin/systemd-email', mode: '0755' }
+
 
 # Statsd systemd services specific settings
 is_systemd_managed_system: "{{ _is_systemd_managed_system | default(False) }}"
@@ -107,18 +111,28 @@ statsd_paths:
   dirs:
     config:
       path: '/etc/statsd'
-    root:
-      path: "{{ statsd_user.home }}"
+    log:
+      path: '/var/log/statsd'
     pid:
       path: '/var/run/statsd'
+    root:
+      path: "{{ statsd_user.home }}"
     service:
       path: '/etc/systemd/system'
   files:
+    init_d:
+      path: '/etc/init.d/statsd'
     main_config:
       path: '/etc/statsd/config.js'
       owner: "{{ statsd_user.name }}"
       group: "{{ statsd_group.name }}"
       mode: '0750'
+    lock:
+      path: '/var/lock/subsys/statsd'
+    log:
+      path: '/var/log/statsd/statsd.log'
+    log_error:
+      path: '/var/log/statsd/statsd_err.log'
     pid:
       path: '/var/run/statsd/statsd.pid'
     service:
@@ -160,54 +174,32 @@ statsd_config:
   deleteIdleStats: 'False'
   prefixStats: 'statsd'
 
-# Ssmtp config and path
-# -----------------------------------------------------------------------------
-
-ssmtp_root_recipient: 'toto@example.com'
-ssmtp_mailhub: 'mail.example.com:587'
-ssmtp_from_line_oeverride: 'YES'
-ssmtp_use_STARTTLS: 'YES'
-ssmtp_authUser: 'toto@example.com'
-ssmtp_authPass: 'change me'
-ssmtp_fromEmail: 'admin@example.com'
-ssmtp_toEmail: 'titi@example.com'
-
-ssmtp_paths:
-  files:
-    main_config:
-      path: '/etc/ssmtp/ssmtp.conf'
-      owner: 'root'
-      group: 'mail'
-      mode: '0640'
-
-revaliases_paths:
-  files:
-    main_config:
-      path: '/etc/ssmtp/revaliases'
-
 
 # Notify user and group
 # -----------------------------------------------------------------------------
 notify_systemd_unit_description: 'status email for %i to user'
 notify_systemd_unit_after: 'network.target'
 notify_systemd_type: 'oneshot'
-notify_systemd_execstart: '/usr/local/bin/systemd-email {{ ssmtp_toEmail }} %i'
+notify_systemd_execstart: '/usr/local/bin/systemd-email {{ notify_ssmtp_toEmail }} %i'
 notify_systemd_restartsec: '600'
 notify_user: 'nobody'
 notify_group: 'systemd-journal'
 notify_service_state: 'started'
 notify_service_enabled: 'True'
+notify_ssmtp_toEmail: 'john.doe@example.com'
+notify_ssmtp_fromEmail: 'john.doe@example.com'
 ```
 
 ## Dependencies
 
-None
+  - geerlingguy.nodejs
 
 ## Example Playbook
 
 ``` yaml
 - hosts: servers
   roles:
+    - { role: geerlingguy.nodejs }
     - { role: Temelio.statsd }
 ```
 

@@ -20,17 +20,10 @@
     force: "{{ statsd_git.force }}"
     update: "{{ statsd_git.do_update }}"
     version: "{{ statsd_version }}"
-  register: 'git_finished'
+  register: '_git_finished'
   notify:
     - 'HANDLER | Restart statsd'
 
-- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
-  npm:
-    global: "{{ statsd_npm.global }}"
-    path: "{{ statsd_npm.path }}"
-    production: "{{ statsd_npm.production }}"
-    state: "{{ statsd_npm.state | default('present') }}"
-  when: 'git_finished.changed'
 
 - name: 'INSTALL | PATHS | Ensure statsd folders exists'
   file:
@@ -44,3 +37,4 @@
     - "{{ statsd_paths.dirs.root }}"
     - "{{ statsd_paths.dirs.pid }}"
     - "{{ statsd_paths.dirs.service }}"
+    - "{{ statsd_paths.dirs.log }}"
