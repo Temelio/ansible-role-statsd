@@ -1,6 +1,7 @@
 ---
 
 # Debian OS family specific vars
+_is_systemd_managed_system: True
 
 _statsd_prerequisites_packages:
   - name: 'git'

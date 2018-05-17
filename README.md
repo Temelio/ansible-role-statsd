@@ -10,7 +10,7 @@ Install statsd package.
 
 ## Requirements
 
-This role requires Ansible 2.2 or higher,
+This role requires Ansible 2.2, 2.3 or 2.4
 and platform requirements are listed in the metadata file.
 
 ## Testing
@@ -43,11 +43,16 @@ $ tox
 ### Default role variables
 
 ``` yaml
+# Defaults vars file for statsd role
+
+# Dependencies management
+statsd_use_ansible_galaxy_dependencies: True  # Use role dependencies in meta
+
 # Repository & package management
 # -----------------------------------------------------------------------------
 statsd_prerequisites_packages: "{{ _statsd_prerequisites_packages }}"
 statsd_repository_cache_valid_time: 3600
-statsd_repository_update_cache: 'True'
+statsd_repository_update_cache: True
 
 
 # Statsd user and group
@@ -69,41 +74,49 @@ statsd_nodejs_binary: '/usr/bin/nodejs'
 
 # Service management
 # -----------------------------------------------------------------------------
-statsd_service_description: 'StatsD Service'
-statsd_service_name: 'statsd'
-statsd_service_enabled: 'True'
-statsd_service_state: 'started'
 statsd_log_storage: 'persistent'
 statsd_log_compress: 'yes'
-
-systemd_service_name: 'systemd'
-
-service_systemd_conf_files:
-  - { name: 'journald.conf.j2', dest: '/etc/systemd/system/notify@.service', mode: '0644' }
-  - { name: 'notify.service.j2', dest: '/etc/systemd/journald.conf', mode: '0644' }
-  - { name: 'systemd.email.j2', dest: '/usr/local/bin/systemd-email', mode: '0755' }
 
 
 # Statsd systemd services specific settings
 is_systemd_managed_system: "{{ _is_systemd_managed_system | default(False) }}"
+systemd_service_name: 'systemd'
+service_systemd_conf_files:
+  journal:
+    name: 'journald.conf.j2'
+    dest: '/etc/systemd/journald.conf'
+    mode: '0644'
+    owner: 'root'
+    group: 'root'
 statsd_service_systemd:
-  dest: '/etc/systemd/system/statsd.service'
-  handler: 'Restart statsd'
-  options:
-    Install:
-      WantedBy: 'multi-user.target'
-    Restart: 'on_failure'
-    Service:
-      Group: "{{ statsd_group.name }}"
-      PrivateTmp: 'true'
-      Restart: 'on-failure'
-      RestartSec: '10s'
-      Type: 'simple'
-      User: "{{ statsd_user.name }}"
-    Unit:
-      After: ''
-      Description: 'Network daemon for aggregating statistics'
-      Wants: 'network.target'
+  - dest: '/etc/systemd/system/statsd.service'
+    handler: 'HANDLER | Restart statsd'
+    options:
+      Unit:
+        Description: 'Network daemon for aggregating statistics'
+        Wants: 'network.target'
+      Service:
+        Type: 'simple'
+        User: "{{ statsd_user.name }}"
+        PIDFile: "{{ statsd_paths.files.pid.path }}"
+        ExecStart: "{{ statsd_nodejs_binary }} {{statsd_paths.files.service.path}} {{ statsd_paths.files.main_config.path }}"
+        Restart: 'on-failure'
+        RestartSec: '10s'
+      Install:
+        WantedBy: 'multi-user.target'
+
+# Statsd initd specific settings
+is_initd_managed_system: "{{ _is_initd_managed_system | default(False) }}"
+statsd_service_initd:
+  - src: "{{ role_path }}/templates/init.d.j2"
+    dest: '/etc/init.d/statsd'
+    handler: 'HANDLER | Restart statsd'
+
+statsd_service_states:
+  - name: 'statsd'
+    enabled: True
+    state: 'started'
+
 
 # Path management
 # -----------------------------------------------------------------------------
@@ -112,7 +125,7 @@ statsd_paths:
     config:
       path: '/etc/statsd'
     log:
-      path: '/var/log/statsd'
+      path: [ ]
     pid:
       path: '/var/run/statsd'
     root:
@@ -120,19 +133,15 @@ statsd_paths:
     service:
       path: '/etc/systemd/system'
   files:
-    init_d:
-      path: '/etc/init.d/statsd'
     main_config:
       path: '/etc/statsd/config.js'
       owner: "{{ statsd_user.name }}"
       group: "{{ statsd_group.name }}"
       mode: '0750'
     lock:
-      path: '/var/lock/subsys/statsd'
+      path: [ ]
     log:
-      path: '/var/log/statsd/statsd.log'
-    log_error:
-      path: '/var/log/statsd/statsd_err.log'
+      path: [ ]
     pid:
       path: '/var/run/statsd/statsd.pid'
     service:
@@ -173,21 +182,6 @@ statsd_config:
   dumpMessages: 'False'
   deleteIdleStats: 'False'
   prefixStats: 'statsd'
-
-
-# Notify user and group
-# -----------------------------------------------------------------------------
-notify_systemd_unit_description: 'status email for %i to user'
-notify_systemd_unit_after: 'network.target'
-notify_systemd_type: 'oneshot'
-notify_systemd_execstart: '/usr/local/bin/systemd-email {{ notify_ssmtp_toEmail }} %i'
-notify_systemd_restartsec: '600'
-notify_user: 'nobody'
-notify_group: 'systemd-journal'
-notify_service_state: 'started'
-notify_service_enabled: 'True'
-notify_ssmtp_toEmail: 'john.doe@example.com'
-notify_ssmtp_fromEmail: 'john.doe@example.com'
 ```
 
 ## Dependencies
@@ -200,7 +194,7 @@ notify_ssmtp_fromEmail: 'john.doe@example.com'
 - hosts: servers
   roles:
     - { role: geerlingguy.nodejs }
-    - { role: Temelio.statsd }
+    - { role: Temelio.ansible-role-statsd }
 ```
 
 ## License

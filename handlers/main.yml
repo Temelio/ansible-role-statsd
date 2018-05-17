@@ -2,23 +2,13 @@
 
 # Handlers main file for statsd role
 
-
 - name: 'HANDLER | Restart statsd'
+  become: True
   service:
-    name: "{{ statsd_service_name }}"
-    state: 'restarted'
-    enabled: "{{ statsd_service_enabled }}"
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::install'
-    - 'role::statsd::config'
-
-
-- name: 'HANDLER | Start statsd'
-  service:
-    name: "{{ statsd_service_name }}"
-    state: '{{ statsd_service_state }}'
-    enabled: "{{ statsd_service_enabled }}"
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items: "{{ statsd_service_states }}"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'

@@ -1,5 +1,8 @@
 ---
 
+_is_initd_managed_system: True
+_is_systemd_managed_system: False
+
 statsd_init_dest: '/etc/init.d/statsd.service'
 statsd_init_owner: 'root'
 statsd_init_group: 'root'

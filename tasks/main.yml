@@ -11,28 +11,6 @@
     - 'role::statsd::install'
 
 
-- name: 'INIT | VARIABLES | Check if OS release tasks file exists'
-  become: 'false'
-  stat:
-    path: "{{ role_path }}/tasks/install_{{ ansible_distribution_release | lower }}.yml"
-  register: 'statsd_check_os_release_tasks'
-  delegate_to: '127.0.0.1'
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::config'
-    - 'role::statsd::init'
-    - 'role::statsd::install'
-
-
-- name: 'INSTALL | Manage os release installation tasks'
-  become: 'True'
-  include: "{{ role_path }}/tasks/install_{{ ansible_distribution_release | lower }}.yml"
-  when: "statsd_check_os_release_tasks.stat.exists"
-  tags:
-    - 'role::statsd'
-    - 'role::statsd::install'
-
-
 - name: 'INSTALL | Manage os family installation tasks'
   become: 'True'
   include: "{{ role_path }}/tasks/install_debian.yml"

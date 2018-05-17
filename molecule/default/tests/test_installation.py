@@ -22,15 +22,25 @@ def test_user(host):
 
 
 @pytest.mark.parametrize('codename,item_type,path,user,group,mode', [
-    (None, 'directory', '/etc/statsd', 'statsd', 'statsd', 0o700),
-    ('trusty', 'directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
-    ('trusty', 'file', '/var/log/statsd/statsd.log', 'root', 'root', 0o644),
-    ('trusty', 'directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
-    ('trusty', 'file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o750),
-    ('trusty', 'file', '/etc/init.d/statsd.service', 'root', 'root', 0o755),
-    (None, 'file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o750),
-    (None, 'file', '/etc/systemd/system/statsd.service', 'root', 'root',
-     0o644),
+    (['trusty'], 'directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
+    (['trusty'], 'file', '/var/log/statsd/statsd.log', 'root', 'root', 0o644),
+    (['trusty'], 'file', '/etc/init.d/statsd.service', 'root', 'root', 0o755),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'directory',
+        '/etc/statsd', 'statsd', 'statsd', 0o700
+    ),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'file',
+        '/etc/statsd/config.js', 'statsd', 'statsd', 0o750
+    ),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'directory',
+        '/var/lib/statsd', 'statsd', 'statsd', 0o700
+    ),
+    (
+        ['xenial', 'jessie', 'stretch'], 'file',
+        '/etc/systemd/system/statsd.service', 'root', 'root', 0o644
+    ),
 ])
 def test_paths_properties(host, codename, item_type, path, user, group, mode):
     """
@@ -38,25 +48,12 @@ def test_paths_properties(host, codename, item_type, path, user, group, mode):
     """
 
     current_item = host.file(path)
-    return codename
-    return host.system_info.codename
 
-    if codename == host.system_info.codename:
-        """
-        Test statsd folders and files properties trusty
-        """
-
-        if item_type == 'directory':
-            assert current_item.is_directory
-        elif item_type == 'file':
-            assert current_item.is_file
-
-        assert current_item.exists
-        assert current_item.user == user
-        assert current_item.group == group
-        assert current_item.mode == mode
-
+    if host.system_info.distribution not in codename:
+        pytest.skip('{} ({}) distribution not managed'.format(
+            host.system_info.distribution, host.system_info.release))
     else:
+
         if item_type == 'directory':
             assert current_item.is_directory
         elif item_type == 'file':
@@ -73,7 +70,7 @@ def test_service(host):
         """
         Test statsd service for trusty
         """
-        service = host.service('statsd.service')
+        service = host.service('statsd')
 
         assert service.is_enabled
 

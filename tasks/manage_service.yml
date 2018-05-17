@@ -2,27 +2,51 @@
 
 # Tasks about statsd service management
 
-- name: 'SERVICE | STATSD | Manage init.d/systemd statsD service configuration file'
+- name: 'SERVICE | Manage systemd services'
   template:
-    src: "{{ role_path }}/templates/{{ ansible_distribution_release }}.j2"
-    dest: "{{ statsd_init_dest }}"
-    owner: "{{ statsd_init_owner }}"
-    group: "{{ statsd_init_group }}"
-    mode: "{{ statsd_init_mode }}"
+    src: "{{ role_path }}/templates/systemd.service.j2"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  notify: "{{ item.handler }}"
+  with_items: "{{ statsd_service_systemd }}"
+  when: "is_systemd_managed_system | bool"
+
+
+- name: 'SERVICE | Manage services with init.d'
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  notify: "{{ item.handler }}"
+  with_items: "{{ statsd_service_initd }}"
+  when:
+    - "not (is_systemd_managed_system | bool)"
+
+
+# Services states
+- name: 'SERVICE | Manage statsd services states'
+  service:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(False) }}"
+  with_items: "{{ statsd_service_states }}"
   notify:
     - 'HANDLER | Restart statsd'
 
 
 # systemD
-- name: 'SERVICE | SYSTEMD | Manage notification and log file'
+- name: 'SERVICE | SYSTEMD | Manage log file'
   template:
     src: "{{ role_path }}/templates/{{ item.name }}"
     dest: "{{ item.dest }}"
-    owner: 'root'
-    group: 'root'
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   with_items:
-    - "{{ service_systemd_conf_files }}"
-  when: ( ansible_distribution_release != "trusty")
+    - "{{ service_systemd_conf_files.journal }}"
+  when: "is_systemd_managed_system | bool"
   notify:
     - 'HANDLER | Restart statsd'

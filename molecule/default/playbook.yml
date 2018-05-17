@@ -45,8 +45,5 @@
           when: "(ansible_distribution_release | lower) == 'trusty'"
       become: True
   roles:
-    - role: "geerlingguy.nodejs__4.1.0"
     - role: "ansible-role-statsd"
   vars:
-    - nodejs_version: '4.x'
-    - nodejs_install_npm_user: 'root'
