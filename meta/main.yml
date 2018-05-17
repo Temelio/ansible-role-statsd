@@ -23,4 +23,6 @@ dependencies:
   - src: 'geerlingguy.nodejs'
     version: '4.1.0'
     name: 'geerlingguy.nodejs__4.1.0'
+    nodejs_version: '4.x'
+    nodejs_install_npm_user: 'root'
     when: 'statsd_use_ansible_galaxy_dependencies or _use_role_dependencies'
