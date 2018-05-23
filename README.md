@@ -194,7 +194,7 @@ statsd_config:
 - hosts: servers
   roles:
     - { role: geerlingguy.nodejs }
-    - { role: Temelio.ansible-role-statsd }
+    - { role: Temelio.statsd }
 ```
 
 ## License
