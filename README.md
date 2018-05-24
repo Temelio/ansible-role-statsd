@@ -90,7 +90,6 @@ service_systemd_conf_files:
     group: 'root'
 statsd_service_systemd:
   - dest: '/etc/systemd/system/statsd.service'
-    handler: 'HANDLER | Restart statsd'
     options:
       Unit:
         Description: 'Network daemon for aggregating statistics'
@@ -110,7 +109,6 @@ is_initd_managed_system: "{{ _is_initd_managed_system | default(False) }}"
 statsd_service_initd:
   - src: "{{ role_path }}/templates/init.d.j2"
     dest: '/etc/init.d/statsd'
-    handler: 'HANDLER | Restart statsd'
 
 statsd_service_states:
   - name: 'statsd'
@@ -186,7 +184,9 @@ statsd_config:
 
 ## Dependencies
 
-  - geerlingguy.nodejs
+> You can disable role dependencies using *statsd_use_ansible_galaxy_dependencies* and setting *False*
+
+* [geerlingguy.nodejs](https://github.com/geerlingguy/ansible-role-nodejs/)
 
 ## Example Playbook
 

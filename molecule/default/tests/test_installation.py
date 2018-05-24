@@ -52,17 +52,15 @@ def test_paths_properties(host, codename, item_type, path, user, group, mode):
     if host.system_info.distribution not in codename:
         pytest.skip('{} ({}) distribution not managed'.format(
             host.system_info.distribution, host.system_info.release))
-    else:
+    if item_type == 'directory':
+        assert current_item.is_directory
+    elif item_type == 'file':
+        assert current_item.is_file
 
-        if item_type == 'directory':
-            assert current_item.is_directory
-        elif item_type == 'file':
-            assert current_item.is_file
-
-        assert current_item.exists
-        assert current_item.user == user
-        assert current_item.group == group
-        assert current_item.mode == mode
+    assert current_item.exists
+    assert current_item.user == user
+    assert current_item.group == group
+    assert current_item.mode == mode
 
 
 def test_service(host):

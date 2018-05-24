@@ -20,7 +20,6 @@
     force: "{{ statsd_git.force }}"
     update: "{{ statsd_git.do_update }}"
     version: "{{ statsd_version }}"
-  register: '_git_finished'
   notify:
     - 'HANDLER | Restart statsd'
 
