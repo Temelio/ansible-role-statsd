@@ -1,20 +1,54 @@
 ---
 
-# Tasks about service management
+# Tasks about statsd service management
 
-- name: 'INSTALL | SERVICE | Install statsd init.d script'
+- name: 'SERVICE | Manage systemd services'
   template:
-    src: "{{ role_path }}/templates/init.j2"
-    dest: "{{ statsd_paths.files.init_d.path }}"
-    owner: "{{ statsd_user.name }}"
-    group: "{{ statsd_group.name }}"
-    mode: "{{ statsd_paths.files.init_d.mode | default('0500') }}"
+    src: "{{ role_path }}/templates/systemd.service.j2"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+  with_items: "{{ statsd_service_systemd }}"
+  when: "is_systemd_managed_system | bool"
+
+
+- name: 'SERVICE | Manage services with init.d'
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0755') }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+  with_items: "{{ statsd_service_initd }}"
+  when:
+    - "not (is_systemd_managed_system | bool)"
+
+
+# Services states
+- name: 'SERVICE | Manage statsd services states'
+  service:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled | default(False) }}"
+  with_items: "{{ statsd_service_states }}"
   notify:
     - 'HANDLER | Restart statsd'
 
 
-- name: 'INSTALL | SERVICE | Manage statsd service'
-  service:
-    name: "{{ statsd_service.name }}"
-    enabled: "{{ statsd_service.enabled }}"
-    state: "{{ statsd_service.state }}"
+# systemD
+- name: 'SERVICE | SYSTEMD | Manage log file'
+  template:
+    src: "{{ role_path }}/templates/{{ item.name }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - "{{ service_systemd_conf_files.journal }}"
+  when: "is_systemd_managed_system | bool"
+  notify:
+    - 'HANDLER | Restart statsd'

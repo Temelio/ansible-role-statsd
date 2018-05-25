@@ -2,10 +2,11 @@
 
 # Debian family specific installation tasks
 
+
 - name: 'INSTALL | APT | Install system prerequisites'
   apt:
     name: "{{ item.name }}"
-    state: "{{ item.state | default('present') }}"
+    state: "{{ item.state | default('latest') }}"
     update_cache: "{{ statsd_repository_update_cache }}"
     cache_valid_time: "{{ statsd_repository_cache_valid_time }}"
   with_items: "{{ statsd_prerequisites_packages }}"

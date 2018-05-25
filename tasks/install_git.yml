@@ -24,15 +24,6 @@
     - 'HANDLER | Restart statsd'
 
 
-- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
-  npm:
-    global: "{{ statsd_npm.global }}"
-    path: "{{ statsd_npm.path }}"
-    production: "{{ statsd_npm.production }}"
-  notify:
-    - 'HANDLER | Restart statsd'
-
-
 - name: 'INSTALL | PATHS | Ensure statsd folders exists'
   file:
     path: "{{ item.path }}"
@@ -42,5 +33,7 @@
     mode: "{{ item.mode | default('0700') }}"
   with_items:
     - "{{ statsd_paths.dirs.config }}"
-    - "{{ statsd_paths.dirs.log }}"
     - "{{ statsd_paths.dirs.root }}"
+    - "{{ statsd_paths.dirs.pid }}"
+    - "{{ statsd_paths.dirs.service }}"
+    - "{{ statsd_paths.dirs.log }}"
