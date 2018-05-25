@@ -12,7 +12,7 @@
 
 
 - name: 'INSTALL | Manage os family installation tasks'
-  become: True
+  become: 'True'
   include: "{{ role_path }}/tasks/install_debian.yml"
   tags:
     - 'role::statsd'
@@ -20,7 +20,7 @@
 
 
 - name: 'INSTALL | Manage Git installation tasks'
-  become: True
+  become: 'True'
   include: "{{ role_path }}/tasks/install_git.yml"
   tags:
     - 'role::statsd'
@@ -28,7 +28,7 @@
 
 
 - name: 'CONFIG | Manage config tasks'
-  become: True
+  become: 'True'
   include: "{{ role_path }}/tasks/config.yml"
   tags:
     - 'role::statsd'
@@ -36,7 +36,7 @@
 
 
 - name: 'CONFIG | Manage services tasks'
-  become: True
+  become: 'True'
   include: "{{ role_path }}/tasks/manage_service.yml"
   tags:
     - 'role::statsd'

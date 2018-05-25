@@ -1,0 +1,36 @@
+---
+
+_is_initd_managed_system: True
+_is_systemd_managed_system: False
+
+statsd_init_dest: '/etc/init.d/statsd.service'
+statsd_init_owner: 'root'
+statsd_init_group: 'root'
+statsd_init_mode: '0755'
+
+statsd_paths:
+  dirs:
+    config:
+      path: '/etc/statsd'
+    log:
+      path: '/var/log/statsd'
+    pid:
+      path: '/var/run/statsd'
+    root:
+      path: "{{ statsd_user.home }}"
+    service:
+      path: '/etc/init.d/'
+  files:
+    main_config:
+      path: '/etc/statsd/config.js'
+      owner: "{{ statsd_user.name }}"
+      group: "{{ statsd_group.name }}"
+      mode: '0750'
+    lock:
+      path: '/var/lock/subsys/statsd'
+    log:
+      path: '/var/log/statsd/statsd.log'
+    log_error:
+      path: '/var/log/statsd/statsd_err.log'
+    pid:
+      path: '/var/run/statsd/statsd.pid'

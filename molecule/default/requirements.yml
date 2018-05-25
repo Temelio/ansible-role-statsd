@@ -1,0 +1,8 @@
+---
+
+- src: 'infOpen.locales'
+  version: '0.3.0'
+
+- src: 'geerlingguy.nodejs'
+  version: '4.1.0'
+  name: 'geerlingguy.nodejs__4.1.0'
