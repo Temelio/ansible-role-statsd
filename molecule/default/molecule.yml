@@ -1,4 +1,10 @@
 ---
+ansible:
+  extra_vars:
+    ansible_python_interpreter: '/usr/bin/env python2.7'
+    no_log: 'False'
+  raw_env_vars:
+    ANSIBLE_NOCOWS: 1
 
 dependency:
   name: 'galaxy'
@@ -7,20 +13,26 @@ driver:
 lint:
   name: 'yamllint'
 platforms:
-  - name: "statsd-docker-jessie"
-    image: 'minimum2scp/systemd-jessie:latest'
-    command: '/sbin/init'
+  - name: "statsd-docker-trusty"
+    image: 'ubuntu:trusty'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
-  - name: "statsd-docker-xenial"
+  - name: 'statsd-docker-xenial'
     image: 'solita/ubuntu-systemd:16.04'
     command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
-  - name: "statsd-docker-trusty"
-    image: 'ubuntu:trusty'
+  - name: 'statsd-docker-jessie'
+    image: 'minimum2scp/systemd-jessie:latest'
+    command: '/sbin/init'
+    cap_add:
+      - 'SYS_PTRACE'
+    privileged: True
+  - name: 'statsd-docker-stretch'
+    image: 'minimum2scp/systemd-stretch'
+    command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
@@ -30,15 +42,12 @@ provisioner:
     name: 'ansible-lint'
   inventory:
     group_vars:
-      all: {}
-    host_vars: {}
+      all:
+        nodejs_version: "4.x"
+        nodejs_install_npm_user: "root"
 scenario:
   name: 'default'
 verifier:
   name: 'testinfra'
-  additional_files_or_dirs:
-    - '../../tests'
   lint:
     name: 'flake8'
-  options:
-    sudo: True

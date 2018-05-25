@@ -1,7 +1,4 @@
 ---
-
-# Role tests
-
 - name: 'Converge | Prerequisites tasks'
   hosts: 'statsd-docker-xenial'
   gather_facts: False
@@ -49,3 +46,4 @@
       become: True
   roles:
     - role: "ansible-role-statsd"
+  vars:

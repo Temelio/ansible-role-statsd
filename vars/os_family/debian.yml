@@ -1,8 +1,12 @@
 ---
 
 # Debian OS family specific vars
+_is_systemd_managed_system: True
 
 _statsd_prerequisites_packages:
   - name: 'git'
-  - name: 'nodejs'
-  - name: 'npm'
+
+statsd_init_dest: '/etc/systemd/system/statsd.service'
+statsd_init_owner: 'root'
+statsd_init_group: 'root'
+statsd_init_mode: '0644'

@@ -4,7 +4,6 @@ Role tests
 
 import os
 import pytest
-
 from testinfra.utils.ansible_runner import AnsibleRunner
 
 testinfra_hosts = AnsibleRunner(
@@ -13,7 +12,7 @@ testinfra_hosts = AnsibleRunner(
 
 def test_user(host):
     """
-    Test statsd user
+    Ensure statsd user exists
     """
 
     user = host.user('statsd')
@@ -22,20 +21,37 @@ def test_user(host):
     assert user.shell == '/usr/sbin/nologin'
 
 
-@pytest.mark.parametrize('item_type,path,user,group,mode', [
-    ('directory', '/etc/statsd', 'statsd', 'statsd', 0o700),
-    ('directory', '/var/lib/statsd', 'statsd', 'statsd', 0o700),
-    ('directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
-    ('file', '/etc/statsd/config.js', 'statsd', 'statsd', 0o400),
-    ('file', '/etc/init.d/statsd', 'statsd', 'statsd', 0o500),
+@pytest.mark.parametrize('codename,item_type,path,user,group,mode', [
+    (['trusty'], 'directory', '/var/log/statsd', 'statsd', 'statsd', 0o700),
+    (['trusty'], 'file', '/var/log/statsd/statsd.log', 'root', 'root', 0o644),
+    (['trusty'], 'file', '/etc/init.d/statsd.service', 'root', 'root', 0o755),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'directory',
+        '/etc/statsd', 'statsd', 'statsd', 0o700
+    ),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'file',
+        '/etc/statsd/config.js', 'statsd', 'statsd', 0o750
+    ),
+    (
+        ['xenial', 'jessie', 'stretch', 'trusty'], 'directory',
+        '/var/lib/statsd', 'statsd', 'statsd', 0o700
+    ),
+    (
+        ['xenial', 'jessie', 'stretch'], 'file',
+        '/etc/systemd/system/statsd.service', 'root', 'root', 0o644
+    ),
 ])
-def test_paths_properties(host, item_type, path, user, group, mode):
+def test_paths_properties(host, codename, item_type, path, user, group, mode):
     """
     Test statsd folders and files properties
     """
 
     current_item = host.file(path)
 
+    if host.system_info.distribution not in codename:
+        pytest.skip('{} ({}) distribution not managed'.format(
+            host.system_info.distribution, host.system_info.release))
     if item_type == 'directory':
         assert current_item.is_directory
     elif item_type == 'file':
@@ -48,19 +64,26 @@ def test_paths_properties(host, item_type, path, user, group, mode):
 
 
 def test_service(host):
-    """
-    Test statsd service
-    """
+    if host.system_info.codename == 'trusty':
+        """
+        Test statsd service for trusty
+        """
+        service = host.service('statsd')
 
-    service = host.service('statsd')
+        assert service.is_enabled
 
-    assert service.is_enabled
+        assert service.is_running
+    else:
+        """
+        Test statsd service for jessie, stretch, xenial
+        """
 
-    # if host.system_info.codename in ['xenial', 'jessie']:
-    #    assert 'is running' in host.check_output('service statsd status')
-    # else:
-    #    assert service.is_running
-    assert service.is_running
+        service = host.service('statsd')
+
+        assert service.is_enabled
+
+        assert 'running' in \
+            host.check_output('service statsd status')
 
 
 def test_process(host):

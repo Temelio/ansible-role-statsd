@@ -5,9 +5,10 @@
 - name: 'HANDLER | Restart statsd'
   become: True
   service:
-    name: "{{ statsd_service.name }}"
-    state: 'restarted'
-  when: "statsd_service.enabled == 'started'"
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items: "{{ statsd_service_states }}"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'
