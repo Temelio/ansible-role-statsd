@@ -9,10 +9,16 @@
     owner: "{{ item.owner | default('root') }}"
     group: "{{ item.group | default('root') }}"
     mode: "{{ item.mode | default('0644') }}"
-  notify:
-    - 'HANDLER | Restart statsd'
+  register: statsd_systemd_updated
   with_items: "{{ statsd_service_systemd }}"
   when: "is_systemd_managed_system | bool"
+
+
+- name: 'SERVICE | systemd daemon-reload'
+  systemd:
+    name: 'systemd'
+    daemon_reload: true
+  when: "(is_systemd_managed_system | bool) and (statsd_systemd_updated.changed | bool)"
 
 
 - name: 'SERVICE | Manage services with init.d'
