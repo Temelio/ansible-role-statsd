@@ -4,7 +4,7 @@
 
 - name: 'SERVICE | check statsd file does not exist'
   stat:
-    path: "/etc/systemd/systemd/statsd"
+    path: "{{ statsd_config_systemd_file }}"
   register: 's'
   when: "is_systemd_managed_system | bool"
 
