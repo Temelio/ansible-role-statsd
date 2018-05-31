@@ -33,7 +33,7 @@ statsd_nodejs_binary: '/usr/bin/nodejs'
 # -----------------------------------------------------------------------------
 statsd_log_storage: 'persistent'
 statsd_log_compress: 'yes'
-
+statsd_config_systemd_file: '/etc/systemd/system/statsd.service'
 
 # Statsd systemd services specific settings
 is_systemd_managed_system: "{{ _is_systemd_managed_system | default(False) }}"
