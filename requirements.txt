@@ -3,4 +3,4 @@ docker-py==1.10.6
 molecule==2.14.0
 pytest==3.6.1
 testinfra==1.14.0
-tox==3.0.0
+tox==3.1.1
