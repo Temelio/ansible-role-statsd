@@ -2,6 +2,7 @@
 
 # Debian OS family specific vars
 _is_systemd_managed_system: True
+nodejs_version: '4.x'
 
 _statsd_prerequisites_packages:
   - name: 'git'

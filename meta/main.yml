@@ -5,7 +5,7 @@ galaxy_info:
   description: 'Ansible role to install and configure Statsd'
   company: 'Temelio (http://www.temelio.com)'
   license: 'MIT'
-  min_ansible_version: '2.2'
+  min_ansible_version: '2.4'
   github_branch: 'master'
   platforms:
     - name: 'Debian'
@@ -16,11 +16,12 @@ galaxy_info:
       versions:
         - 'trusty'
         - 'xenial'
+        - 'bionic'
   galaxy_tags:
     - 'monitoring'
     - 'system'
 dependencies:
   - src: 'geerlingguy.nodejs'
-    version: '4.1.0'
-    name: 'geerlingguy.nodejs__4.1.0'
+    version: '4.2.2'
+    name: 'geerlingguy.nodejs__4.2.2'
     when: 'statsd_use_ansible_galaxy_dependencies or _use_role_dependencies'
