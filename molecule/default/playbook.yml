@@ -46,4 +46,3 @@
       become: True
   roles:
     - role: "ansible-role-statsd"
-  vars:
