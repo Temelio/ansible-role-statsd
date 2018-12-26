@@ -204,6 +204,5 @@ MIT
 
 ## Author Information
 
-Alexandre Chaussier (for Temelio company)
+Alexandre Chaussier, update by Lise Machetel (for Temelio company)
 - http://www.temelio.com
-- alexandre.chaussier [at] temelio.com

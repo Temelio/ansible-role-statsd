@@ -46,3 +46,9 @@
       become: True
   roles:
     - role: "ansible-role-statsd"
+  vars:
+    statsd_npm:
+      global: true
+      path: "{{ statsd_user.home }}"
+      production: false
+      state: 'present'
