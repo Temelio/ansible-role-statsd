@@ -2,7 +2,7 @@
 
 # Travis configuration
 
-dist: 'trusty'
+dist: 'xenial'
 sudo: 'required'
 
 services:
@@ -12,9 +12,9 @@ language: 'python'
 
 env:
   matrix:
-    - TOXENV='py27-ansible22'
-    - TOXENV='py27-ansible23'
     - TOXENV='py27-ansible24'
+    - TOXENV='py27-ansible25'
+    - TOXENV='py27-ansible26'
 
 install:
   - 'pip install tox-travis'
