@@ -118,9 +118,9 @@ statsd_git:
 
 # NPM options
 statsd_npm:
-  global: 'False'
+  global: false
   path: "{{ statsd_user.home }}"
-  production: 'True'
+  production: yes
   state: 'present'
 
 # Statsd configuration

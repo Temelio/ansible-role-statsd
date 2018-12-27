@@ -3,7 +3,7 @@
 # Main tasks file for statsd role
 
 - name: 'INIT | Manage variables to use for our target'
-  include: "{{ role_path }}/tasks/manage_variables.yml"
+  include_tasks: "{{ role_path }}/tasks/manage_variables.yml"
   tags:
     - 'role::statsd'
     - 'role::statsd::config'
@@ -13,7 +13,7 @@
 
 - name: 'INSTALL | Manage os family installation tasks'
   become: 'True'
-  include: "{{ role_path }}/tasks/install_debian.yml"
+  include_tasks: "{{ role_path }}/tasks/install_debian.yml"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'
@@ -21,7 +21,7 @@
 
 - name: 'INSTALL | Manage Git installation tasks'
   become: 'True'
-  include: "{{ role_path }}/tasks/install_git.yml"
+  include_tasks: "{{ role_path }}/tasks/install_git.yml"
   tags:
     - 'role::statsd'
     - 'role::statsd::install'
@@ -29,7 +29,7 @@
 
 - name: 'CONFIG | Manage config tasks'
   become: 'True'
-  include: "{{ role_path }}/tasks/config.yml"
+  include_tasks: "{{ role_path }}/tasks/config.yml"
   tags:
     - 'role::statsd'
     - 'role::statsd::config'
@@ -37,7 +37,7 @@
 
 - name: 'CONFIG | Manage services tasks'
   become: 'True'
-  include: "{{ role_path }}/tasks/manage_service.yml"
+  include_tasks: "{{ role_path }}/tasks/manage_service.yml"
   tags:
     - 'role::statsd'
     - 'role::statsd::config'

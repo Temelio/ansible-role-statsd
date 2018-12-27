@@ -23,13 +23,14 @@ See molecule documentation to use other backend.
 Currently, tests are done on:
 - Ubuntu Trusty
 - Ubuntu Xenial
+- Ubuntu Bionic
 - Debian Jessie
 - Debian Stretch
 
 and use:
-- Ansible 2.2.x
-- Ansible 2.3.x
 - Ansible 2.4.x
+- Ansible 2.5.x
+- Ansible 2.6.x
 
 ### Running tests
 
@@ -203,6 +204,5 @@ MIT
 
 ## Author Information
 
-Alexandre Chaussier (for Temelio company)
+Alexandre Chaussier, update by Lise Machetel (for Temelio company)
 - http://www.temelio.com
-- alexandre.chaussier [at] temelio.com
