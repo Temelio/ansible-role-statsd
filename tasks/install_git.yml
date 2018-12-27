@@ -38,6 +38,15 @@
     - 'HANDLER | Restart statsd'
 
 
+- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
+  npm:
+    global: "{{ statsd_npm.global }}"
+    path: "{{ statsd_npm.path }}"
+    production: "{{ statsd_npm.production }}"
+  notify:
+    - 'HANDLER | Restart statsd'
+
+
 - name: 'INSTALL | PATHS | Ensure statsd folders exists'
   file:
     path: "{{ item.path }}"
