@@ -2,13 +2,14 @@
 
 # Travis configuration
 
-dist: 'xenial'
+dist: 'trusty'
 sudo: 'required'
 
 services:
   - 'docker'
 
 language: 'python'
+python: '2.7'
 
 env:
   matrix:

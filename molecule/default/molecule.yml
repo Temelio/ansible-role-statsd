@@ -2,7 +2,7 @@
 ansible:
   extra_vars:
     ansible_python_interpreter: '/usr/bin/env python2.7'
-    no_log: true
+    no_log: True
   raw_env_vars:
     ANSIBLE_NOCOWS: 1
 
@@ -13,8 +13,9 @@ driver:
 lint:
   name: 'yamllint'
 platforms:
-  - name: "statsd-docker-trusty"
+  - name: 'statsd-docker-trusty'
     image: 'ubuntu:trusty'
+    command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'
     privileged: True
@@ -26,12 +27,6 @@ platforms:
     privileged: True
   - name: 'statsd-docker-bionic'
     image: 'solita/ubuntu-systemd:18.04'
-    command: '/sbin/init'
-    cap_add:
-      - 'SYS_PTRACE'
-    privileged: True
-  - name: 'statsd-docker-jessie'
-    image: 'minimum2scp/systemd-jessie:latest'
     command: '/sbin/init'
     cap_add:
       - 'SYS_PTRACE'

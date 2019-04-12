@@ -2,13 +2,6 @@
 
 # Tasks about statsd service management
 
-- name: 'SERVICE | check statsd file does not exist'
-  stat:
-    path: "{{ statsd_config_systemd_file }}"
-  register: 's'
-  when: "is_systemd_managed_system | bool"
-
-
 - name: 'SERVICE | Manage systemd services'
   template:
     src: "{{ role_path }}/templates/systemd.service.j2"
@@ -18,14 +11,8 @@
     mode: "{{ item.mode | default('0644') }}"
   register: 'statsd_systemd_updated'
   with_items: "{{ statsd_service_systemd }}"
-  when: "(is_systemd_managed_system | bool) and (s.stat.exists == false)"
-
-
-- name: 'SERVICE | systemd daemon-reload'
-  systemd:
-    name: 'systemd'
-    daemon_reload: true
-  when: "(is_systemd_managed_system | bool) and (statsd_systemd_updated.changed | bool)"
+  when: is_systemd_managed_system
+  notify: 'HANDLER | systemd daemon-reload'
 
 
 - name: 'SERVICE | Manage services with init.d'
@@ -38,8 +25,7 @@
   notify:
     - 'HANDLER | Restart statsd'
   with_items: "{{ statsd_service_initd }}"
-  when:
-    - "not (is_systemd_managed_system | bool)"
+  when: not is_systemd_managed_system
 
 
 # Services states
@@ -62,6 +48,6 @@
     mode: "{{ item.mode }}"
   with_items:
     - "{{ service_systemd_conf_files.journal }}"
-  when: "is_systemd_managed_system | bool"
+  when: is_systemd_managed_system
   notify:
     - 'HANDLER | Restart statsd'

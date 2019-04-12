@@ -47,6 +47,7 @@
   roles:
     - role: "ansible-role-statsd"
   vars:
+    nodejs_version: '6.x'
     statsd_npm:
       global: true
       path: "{{ statsd_user.home }}"
