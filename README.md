@@ -188,6 +188,7 @@ statsd_config:
 > You can disable role dependencies using *statsd_use_ansible_galaxy_dependencies* and setting *False*
 
 * [geerlingguy.nodejs](https://github.com/geerlingguy/ansible-role-nodejs/)
+and nodejs version 6.x or 8.x
 
 ## Example Playbook
 

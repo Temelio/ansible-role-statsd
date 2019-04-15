@@ -13,3 +13,11 @@
     - 'role::statsd'
     - 'role::statsd::install'
     - 'role::statsd::config'
+
+- name: 'HANDLER | systemd daemon-reload'
+  systemd:
+    name: 'systemd'
+    daemon_reload: true
+  when:
+    - is_systemd_managed_system
+    - statsd_systemd_updated.changed
