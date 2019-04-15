@@ -2,7 +2,7 @@
 ansible:
   extra_vars:
     ansible_python_interpreter: '/usr/bin/env python2.7'
-    no_log: True
+    no_log: true
   raw_env_vars:
     ANSIBLE_NOCOWS: 1
 

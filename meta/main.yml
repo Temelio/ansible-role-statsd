@@ -3,7 +3,7 @@
 galaxy_info:
   author: 'Alexandre Chaussier, Lise Machetel'
   description: 'Ansible role to install and configure Statsd'
-  company: 'Temelio (http://www.temelio.com)'
+  company: 'Temelio (https://www.temelio.com)'
   license: 'MIT'
   min_ansible_version: '2.4'
   github_branch: 'master'
