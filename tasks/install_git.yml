@@ -23,28 +23,15 @@
   notify:
     - 'HANDLER | Restart statsd'
 
-- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
-  npm:
-    global: "{{ statsd_npm.global }}"
-    path: "{{ statsd_npm.path }}"
-    production: "{{ statsd_npm.production }}"
 
 - name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
   npm:
     global: "{{ statsd_npm.global }}"
     path: "{{ statsd_npm.path }}"
     production: "{{ statsd_npm.production }}"
+  register: install_npm_dependencies
   notify:
-    - 'HANDLER | Restart statsd'
-
-
-- name: 'INSTALL | NODEJS | Install statsd NodeJS dependencies'
-  npm:
-    global: "{{ statsd_npm.global }}"
-    path: "{{ statsd_npm.path }}"
-    production: "{{ statsd_npm.production }}"
-  notify:
-    - 'HANDLER | Restart statsd'
+    - 'HANDLER | Restart statsd if necessary'
 
 
 - name: 'INSTALL | PATHS | Ensure statsd folders exists'

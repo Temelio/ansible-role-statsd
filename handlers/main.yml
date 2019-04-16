@@ -14,6 +14,15 @@
     - 'role::statsd::install'
     - 'role::statsd::config'
 
+- name: 'HANDLER | Restart statsd if necessary'
+  become: True
+  service:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+    enabled: "{{ item.enabled }}"
+  with_items: "{{ statsd_service_states }}"
+  when: install_npm_dependencies.changed
+
 - name: 'HANDLER | systemd daemon-reload'
   systemd:
     name: 'systemd'
