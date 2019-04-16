@@ -23,5 +23,4 @@ galaxy_info:
 dependencies:
   - src: 'geerlingguy.nodejs'
     version: '5.0.0'
-    name: 'geerlingguy.nodejs__5.0.0'
     when: 'statsd_use_ansible_galaxy_dependencies or _use_role_dependencies'
