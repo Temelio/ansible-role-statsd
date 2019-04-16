@@ -1,17 +1,18 @@
 # statsd
 
+[![License](https://img.shields.io/badge/license-MIT%20License-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/travis/Temelio/ansible-role-statsd/master.svg?label=travis_master)](https://travis-ci.org/Temelio/ansible-role-statsd)
 [![Build Status](https://img.shields.io/travis/Temelio/ansible-role-statsd/develop.svg?label=travis_develop)](https://travis-ci.org/Temelio/ansible-role-statsd)
 [![Updates](https://pyup.io/repos/github/Temelio/ansible-role-statsd/shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
 [![Python 3](https://pyup.io/repos/github/Temelio/ansible-role-statsd/python-3-shield.svg)](https://pyup.io/repos/github/Temelio/ansible-role-statsd/)
 [![Ansible Role](https://img.shields.io/ansible/role/12562.svg)](https://galaxy.ansible.com/Temelio/statsd/)
+[![GitHub tag](https://img.shields.io/github/tag/Temelio/ansible-role-statsd.svg)](https://github.com/Temelio/ansible-role-stasd/tags)
 
 Install statsd package.
 
 ## Requirements
 
-This role requires Ansible 2.2, 2.3 or 2.4
-and platform requirements are listed in the metadata file.
+This role requires Ansible 2.4 or higher, and platform requirements are listed in the metadata file.
 
 ## Testing
 
@@ -31,6 +32,7 @@ and use:
 - Ansible 2.4.x
 - Ansible 2.5.x
 - Ansible 2.6.x
+- Ansible 2.7.x
 
 ### Running tests
 
@@ -205,5 +207,5 @@ MIT
 
 ## Author Information
 
-Alexandre Chaussier, update by Lise Machetel (for Temelio company)
-- http://www.temelio.com
+A Chaussier, L Machetel (for Temelio company)
+- https://www.temelio.com
